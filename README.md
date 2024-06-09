@@ -44,9 +44,7 @@ rust_dsa
     ...
 ```
 
-[Back to Table of Contents](#table-of-contents)
-
-## Algorithms and Data Structures
+## Algorithms and Data Structures [:arrow_heading_up:](#table-of-contents)
 
 ### Linear Search
 
@@ -94,9 +92,7 @@ mod tests {
 }
 ```
 
-[Back to Table of Contents](#table-of-contents)
-
-## Rust Concepts
+## Rust Concepts [:arrow_heading_up:](#table-of-contents)
 
 ### Ownership and Borrowing
 
@@ -110,9 +106,7 @@ The linear search function is generic, allowing it to work with any type that im
 
 Rust ensures safe memory access by performing bounds checking on array accesses. The implementation uses safe indexing to prevent out-of-bounds access.
 
-[Back to Table of Contents](#table-of-contents)
-
-## Getting Started
+## Getting Started [:arrow_heading_up:](#table-of-contents)
 
 To get started with this project, clone the repository and build it using Cargo:
 
@@ -128,10 +122,6 @@ To run the unit tests, use:
 cargo test
 ```
 
-[Back to Table of Contents](#table-of-contents)
-
-## License
+## License [:arrow_heading_up:](#table-of-contents)
 
 This project is licensed under the Apache 2.0 License.
-
-[Back to Table of Contents](#table-of-contents)
