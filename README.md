@@ -25,12 +25,21 @@ rust_dsa
 ├── src
 │   ├── lib.rs
 │   ├── main.rs
+│   ├── arrays
+│   │   ├── mod.rs
+│   │   ├── reverse_array.rs
+│   │   ├── tests
+│   │   │   ├── mod.rs
+│   │   │   ├── reverse_array.rs
 │   ├── search
 │   │   ├── mod.rs
 │   │   ├── linear_search.rs
 │   │   ├── tests
 │   │   │   ├── mod.rs
 │   │   │   ├── linear_search.rs
+
+    ... In progress
+    
 │   ├── sorting
 │   │   ├── mod.rs
 │   │   ├── selection_sort.rs
@@ -41,10 +50,45 @@ rust_dsa
 │   │   ├── linked_list.rs
 │   │   ├── hashmap.rs
 │   │   ├── tests.rs
+
     ...
 ```
 
 ## Algorithms and Data Structures [:arrow_heading_up:](#table-of-contents)
+
+### Arrays
+
+The array module contains implementations of algorithms that operate on arrays.
+
+#### Reverse Array
+
+The reverse array algorithm reverses the elements of an array in place. The implementation is efficient and uses Rust's safety features.
+
+```rust
+pub fn reverse_array<T>(arr: &mut [T]) {
+    let mut start = 0;
+    let mut end = arr.len() - 1;
+    while start < end {
+        arr.swap(start, end);
+        start += 1;
+        end -= 1;
+    }
+}
+```
+
+#### Complexity Analysis
+
+- **Time Complexity**: O(n) - The algorithm iterates through half of the array to reverse it.
+- **Space Complexity**: O(1) - The algorithm uses a constant amount of extra space.
+- **In-Place**: The algorithm reverses the array in place without using additional memory.
+
+#### Test Cases
+
+Tests are provided to ensure the correctness of the reverse array implementation.
+
+``` shell 
+cargo test reverse_array
+```
 
 ### Linear Search
 
@@ -71,25 +115,8 @@ pub fn linear_search<T: PartialEq>(arr: &[T], target: &T) -> Option<usize> {
 
 Tests are provided to ensure the correctness of the linear search implementation.
 
-```rust
-#[cfg(test)]
-mod tests {
-    use crate::search::linear_search::linear_search;
-
-    #[test]
-    fn test_linear_search_with_ints() {
-        let arr = [1, 2, 3, 4, 5];
-        assert_eq!(linear_search(&arr, &3), Some(2));
-        assert_eq!(linear_search(&arr, &6), None);
-    }
-
-    #[test]
-    fn test_linear_search_with_strings() {
-        let arr = ["apple", "banana", "cherry"];
-        assert_eq!(linear_search(&arr, &"banana"), Some(1));
-        assert_eq!(linear_search(&arr, &"orange"), None);
-    }
-}
+``` shell
+cargo test linear_search
 ```
 
 ## Rust Concepts [:arrow_heading_up:](#table-of-contents)
