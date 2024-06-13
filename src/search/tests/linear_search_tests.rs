@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod linear_search_tests {
     use crate::search::linear_search::linear_search;
 
     #[test]

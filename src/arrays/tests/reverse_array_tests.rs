@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod reverse_array_tests {
     use crate::arrays::reverse_array::reverse_array;
 
     #[test]
