@@ -17,3 +17,20 @@ pub mod search {
         mod binary_search_tests;
     }
 }
+
+pub mod sorting {
+    pub mod sort_tracker;
+
+    pub mod insertion_sort;
+    pub mod insertion_sort_with_tracking;
+
+    pub mod merge_sort;
+
+    #[cfg(test)]
+    mod tests {
+        mod insertion_sort_tests;
+        mod insertion_sort_with_tracking_tests;
+
+        mod merge_sort_tests;
+    }
+}
