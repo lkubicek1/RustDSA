@@ -30,6 +30,11 @@ pub mod sorting {
     pub mod heap_sort;
     pub mod heap_sort_with_tracking;
 
+    pub mod quick_sort;
+    pub mod quick_sort_mid;
+    pub mod quick_sort_with_tracking;
+    pub mod quick_sort_mid_with_tracking;
+
     #[cfg(test)]
     mod tests {
         mod insertion_sort_tests;
@@ -40,5 +45,10 @@ pub mod sorting {
 
         mod heap_sort_tests;
         mod heap_sort_with_tracking_tests;
+
+        mod quick_sort_tests;
+        mod quick_sort_mid_tests;
+        mod quick_sort_with_tracking_tests;
+        mod quick_sort_mid_with_tracking_tests;
     }
 }
