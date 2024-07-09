@@ -35,6 +35,7 @@ pub mod sorting {
     pub mod quick_sort_mod;
     pub mod quick_sort_with_tracking;
     pub mod quick_sort_mid_with_tracking;
+    pub mod quick_sort_mod_with_tracking;
 
     #[cfg(test)]
     mod tests {
@@ -52,5 +53,6 @@ pub mod sorting {
         mod quick_sort_mod_tests;
         mod quick_sort_with_tracking_tests;
         mod quick_sort_mid_with_tracking_tests;
+        mod quick_sort_mod_with_tracking_tests;
     }
 }

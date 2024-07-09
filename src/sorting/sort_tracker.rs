@@ -21,6 +21,16 @@ impl SortTracker {
         self.swap_count
     }
 
+    pub fn compare_gt<T: PartialOrd>(&mut self, array: &[T], index1: usize, index2: usize) -> bool {
+        self.comparison_count += 1;
+        array[index1] > array[index2]
+    }
+
+    pub fn compare_gte<T: PartialOrd>(&mut self, array: &[T], index1: usize, index2: usize) -> bool {
+        self.comparison_count += 1;
+        array[index1] >= array[index2]
+    }
+
     pub fn compare_lt<T: PartialOrd>(&mut self, array: &[T], index1: usize, index2: usize) -> bool {
         self.comparison_count += 1;
         array[index1] < array[index2]
