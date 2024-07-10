@@ -1,6 +1,7 @@
 use crate::sorting::sort_tracker::SortTracker;
 
 pub fn heap_sort<T: PartialOrd+Default+PartialEq>(arr: &mut [T], tracker: &mut SortTracker) {
+    tracker.start_timer();
     // Heapify array
     for i in (0..arr.len()/2).rev() {
         max_heap_percolate(i, arr, arr.len(), tracker)
@@ -10,6 +11,7 @@ pub fn heap_sort<T: PartialOrd+Default+PartialEq>(arr: &mut [T], tracker: &mut S
         arr.swap(0, i);
         max_heap_percolate(0, arr, i, tracker);
     }
+    tracker.stop_timer();
 }
 
 fn max_heap_percolate<T: PartialOrd+Default+PartialEq>(mut node_index: usize, heap_arr: &mut [T], heap_size: usize, tracker: &mut SortTracker) {

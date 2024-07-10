@@ -1,3 +1,8 @@
+pub mod util {
+    pub mod data_generation;
+    pub mod reporting;
+}
+
 pub mod arrays {
     pub mod reverse_array;
 
@@ -54,5 +59,11 @@ pub mod sorting {
         mod quick_sort_with_tracking_tests;
         mod quick_sort_mid_with_tracking_tests;
         mod quick_sort_mod_with_tracking_tests;
+
+        mod insertion_sort_benchmarks;
+        mod merge_sort_benchmarks;
+        mod heap_sort_benchmarks;
+        mod quick_sort_benchmarks;
+        mod quick_sort_mod_benchmarks;
     }
 }

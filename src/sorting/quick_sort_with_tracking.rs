@@ -1,9 +1,11 @@
 use crate::sorting::sort_tracker::SortTracker;
 
 pub fn quick_sort<T: PartialOrd>(arr: &mut [T], tracker: &mut SortTracker) {
+    tracker.start_timer();
     if !arr.is_empty() {
         quick_sort_recursive(arr, 0, arr.len() - 1, tracker);
     }
+    tracker.stop_timer();
 }
 
 fn quick_sort_recursive<T: PartialOrd>(arr: &mut [T], low_index: usize, high_index: usize, tracker: &mut SortTracker) {

@@ -1,9 +1,11 @@
 use crate::sorting::sort_tracker::SortTracker;
 
 pub fn merge_sort<T: PartialOrd + Default>(arr: &mut [T], tracker: &mut SortTracker) {
+    tracker.start_timer();
     if !arr.is_empty() {
         merge_sort_recursive(arr, 0, arr.len() - 1, tracker);
     }
+    tracker.stop_timer();
 }
 
 fn merge_sort_recursive<T: PartialOrd + Default>(arr: &mut [T], start_index: usize, end_index: usize, tracker: &mut SortTracker) {
