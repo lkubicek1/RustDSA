@@ -15,11 +15,13 @@ pub mod arrays {
 pub mod search {
     pub mod linear_search;
     pub mod binary_search;
+    pub mod graph_depth_first_search;
 
     #[cfg(test)]
     mod tests {
         mod linear_search_tests;
         mod binary_search_tests;
+        mod graph_depth_first_search_tests;
     }
 }
 
