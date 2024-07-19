@@ -44,6 +44,8 @@ pub mod sorting {
     pub mod quick_sort_mid_with_tracking;
     pub mod quick_sort_mod_with_tracking;
 
+    pub mod graph_topological_sort;
+
     #[cfg(test)]
     mod tests {
         mod insertion_sort_tests;
@@ -67,5 +69,7 @@ pub mod sorting {
         mod heap_sort_benchmarks;
         mod quick_sort_benchmarks;
         mod quick_sort_mod_benchmarks;
+
+        mod graph_topological_sort_tests;
     }
 }
