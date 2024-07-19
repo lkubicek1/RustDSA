@@ -1,8 +1,7 @@
-// sorting/graph_topological_sort.rs
+use std::collections::{BinaryHeap, HashMap};
+use std::cmp::Reverse;
 
-use std::collections::{HashMap, VecDeque};
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Vertex {
     pub label: String,
 }
@@ -12,6 +11,18 @@ impl Vertex {
         Vertex {
             label: label.to_string(),
         }
+    }
+}
+
+impl Ord for Vertex {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.label.cmp(&other.label)
+    }
+}
+
+impl PartialOrd for Vertex {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }
 
@@ -60,7 +71,7 @@ impl Graph {
 
     pub fn topological_sort(&self) -> Result<Vec<String>, &'static str> {
         let mut result = Vec::new();
-        let mut no_incoming = VecDeque::new();
+        let mut no_incoming = BinaryHeap::new();
         let mut incoming_count = HashMap::new();
 
         for (vertex, edges) in &self.to_edges {
@@ -68,13 +79,13 @@ impl Graph {
             incoming_count.insert(vertex.clone(), count);
 
             if count == 0 {
-                no_incoming.push_back(vertex.clone());
+                no_incoming.push(Reverse(vertex.clone()));
             }
         }
 
         let mut processed_count = 0;
 
-        while let Some(current_vertex) = no_incoming.pop_front() {
+        while let Some(Reverse(current_vertex)) = no_incoming.pop() {
             result.push(current_vertex.clone());
             processed_count += 1;
 
@@ -85,7 +96,7 @@ impl Graph {
                     incoming_count.insert(to_vertex.clone(), new_count);
 
                     if new_count == 0 {
-                        no_incoming.push_back(to_vertex.clone());
+                        no_incoming.push(Reverse(to_vertex.clone()));
                     }
                 }
             }
