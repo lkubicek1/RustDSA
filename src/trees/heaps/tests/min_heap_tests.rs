@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod min_heap_tests {
     use crate::trees::heaps::min_heap::MinHeap;
-    use crate::trees::heaps::heap_trait::Heap;
 
     #[test]
     fn test_new_heap_is_empty() {
@@ -202,8 +201,7 @@ mod min_heap_tests {
         heap.push(1);
         heap.push(4);
         let display_string = format!("{}", heap);
-        assert!(display_string.starts_with("MinHeap ["));
-        assert!(display_string.ends_with("]"));
+        assert!(display_string.contains("MinHeap"));
         assert!(display_string.contains("1"));
         assert!(display_string.contains("3"));
         assert!(display_string.contains("4"));

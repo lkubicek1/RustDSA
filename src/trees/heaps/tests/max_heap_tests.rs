@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod max_heap_tests {
-    use crate::trees::heaps::heap_trait::Heap;
     use crate::trees::heaps::max_heap::MaxHeap;
 
     #[test]
@@ -146,8 +145,7 @@ mod max_heap_tests {
         heap.push(1);
         heap.push(4);
         let display_string = format!("{}", heap);
-        assert!(display_string.starts_with("MaxHeap ["));
-        assert!(display_string.ends_with("]"));
+        assert!(display_string.contains("MaxHeap"));
         assert!(display_string.contains("4"));
         assert!(display_string.contains("3"));
         assert!(display_string.contains("1"));

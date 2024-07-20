@@ -1,4 +1,4 @@
-use std::fmt;
+/*use std::fmt;
 use std::marker::PhantomData;
 use std::iter::FromIterator;
 use crate::trees::heaps::heap_trait::Heap;
@@ -113,4 +113,4 @@ where
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "PriorityQueue {}", self.heap)
     }
-}
+}*/

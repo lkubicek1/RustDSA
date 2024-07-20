@@ -28,7 +28,7 @@ pub mod search {
 pub mod trees {
     pub mod heaps {
         pub mod heap_trait;
-        pub mod binary_heap;
+        pub mod heap;
         pub mod max_heap;
         pub mod min_heap;
         pub mod priority_queue;
