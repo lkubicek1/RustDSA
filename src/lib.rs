@@ -25,6 +25,23 @@ pub mod search {
     }
 }
 
+pub mod trees {
+    pub mod heaps {
+        pub mod heap_trait;
+        pub mod binary_heap;
+        pub mod max_heap;
+        pub mod min_heap;
+        pub mod priority_queue;
+
+        #[cfg(test)]
+        mod tests {
+            mod max_heap_tests;
+            mod min_heap_tests;
+            mod priority_queue_tests;
+        }
+    }
+}
+
 pub mod sorting {
     pub mod sort_tracker;
 
