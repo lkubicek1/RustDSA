@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod min_heap_tests {
+    use crate::trees::heaps::heap::Heap;
     use crate::trees::heaps::min_heap::MinHeap;
 
     #[test]

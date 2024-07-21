@@ -1,44 +1,114 @@
 use std::cmp::Ordering;
 use std::fmt;
+use std::marker::PhantomData;
 
-pub trait HeapType: Sized {
+// Heap trait
+pub trait Heap<T>
+where
+    T: Ord + fmt::Debug,
+{
+    fn new() -> Self
+    where
+        Self: Sized;
+    fn with_capacity(capacity: usize) -> Self
+    where
+        Self: Sized;
+    fn push(&mut self, item: T);
+    fn pop(&mut self) -> Option<T>;
+    fn peek(&self) -> Option<&T>;
+    fn len(&self) -> usize;
+    fn is_empty(&self) -> bool;
+    fn drain(&mut self) -> Box<dyn Iterator<Item = T> + '_>;
+    fn retain<P>(&mut self, predicate: P)
+    where
+        P: FnMut(&T) -> bool;
+    fn clear(&mut self);
+}
+
+// HeapType trait
+pub trait HeapType: Sized + fmt::Debug {
     fn type_name() -> &'static str;
+    fn comparison_fn<T: Ord>() -> fn(&T, &T) -> Ordering;
 }
 
-pub struct Heap<T, F, H>
+// Generic Heap implementation
+pub struct GenericHeap<T, H>
 where
     T: Ord + fmt::Debug,
-    F: Fn(&T, &T) -> Ordering,
     H: HeapType,
 {
-    heap: Vec<T>,
-    d: usize,
-    compare: F,
-    _marker: std::marker::PhantomData<H>,
+    pub(crate) heap: Vec<T>,
+    _marker: PhantomData<H>,
 }
 
-impl<T, F, H> Heap<T, F, H>
+impl<T, H> GenericHeap<T, H>
 where
     T: Ord + fmt::Debug,
-    F: Fn(&T, &T) -> Ordering,
     H: HeapType,
 {
-    pub fn with_capacity(d: usize, compare: F, capacity: usize) -> Self {
-        assert!(d >= 2, "d must be at least 2");
-        Heap {
-            heap: Vec::with_capacity(capacity),
-            d,
-            compare,
-            _marker: std::marker::PhantomData,
+    fn heapify_up(&mut self, mut index: usize) {
+        let compare = H::comparison_fn();
+        while index > 0 {
+            let parent = (index - 1) / 2;
+            if compare(&self.heap[index], &self.heap[parent]) == Ordering::Less {
+                self.heap.swap(index, parent);
+                index = parent;
+            } else {
+                break;
+            }
         }
     }
 
-    pub fn push(&mut self, item: T) {
+    fn heapify_down(&mut self, mut index: usize) {
+        let compare = H::comparison_fn();
+        let len = self.heap.len();
+        loop {
+            let mut extreme = index;
+            let left_child = 2 * index + 1;
+            let right_child = 2 * index + 2;
+
+            if left_child < len && compare(&self.heap[left_child], &self.heap[extreme]) == Ordering::Less {
+                extreme = left_child;
+            }
+            if right_child < len && compare(&self.heap[right_child], &self.heap[extreme]) == Ordering::Less {
+                extreme = right_child;
+            }
+
+            if extreme != index {
+                self.heap.swap(index, extreme);
+                index = extreme;
+            } else {
+                break;
+            }
+        }
+    }
+}
+
+impl<T, H> Heap<T> for GenericHeap<T, H>
+where
+    T: Ord + fmt::Debug,
+    H: HeapType,
+{
+    fn new() -> Self {
+        Self {
+            heap: Vec::new(),
+            _marker: PhantomData,
+        }
+    }
+
+    fn with_capacity(capacity: usize) -> Self {
+        Self {
+            heap: Vec::with_capacity(capacity),
+            _marker: PhantomData,
+        }
+    }
+
+    fn push(&mut self, item: T) {
         self.heap.push(item);
         self.heapify_up(self.heap.len() - 1);
     }
 
-    pub fn pop(&mut self) -> Option<T> {
+    fn pop(&mut self) -> Option<T> {
         if self.heap.is_empty() {
             None
         } else {
@@ -53,63 +123,23 @@ where
         }
     }
 
-    pub fn peek(&self) -> Option<&T> {
+    fn peek(&self) -> Option<&T> {
         self.heap.first()
     }
 
-    pub fn len(&self) -> usize {
+    fn len(&self) -> usize {
         self.heap.len()
     }
 
-    pub fn is_empty(&self) -> bool {
+    fn is_empty(&self) -> bool {
         self.heap.is_empty()
     }
 
-    fn parent(i: usize, d: usize) -> usize {
-        (i - 1) / d
+    fn drain(&mut self) -> Box<dyn Iterator<Item = T> + '_> {
+        Box::new(std::iter::from_fn(move || self.pop()))
     }
 
-    fn first_child(i: usize, d: usize) -> usize {
-        i * d + 1
-    }
-
-    fn heapify_up(&mut self, mut index: usize) {
-        while index > 0 {
-            let parent = Self::parent(index, self.d);
-            if (self.compare)(&self.heap[index], &self.heap[parent]) == Ordering::Less {
-                self.heap.swap(index, parent);
-                index = parent;
-            } else {
-                break;
-            }
-        }
-    }
-
-    fn heapify_down(&mut self, mut index: usize) {
-        loop {
-            let mut extreme = index;
-            let first_child = Self::first_child(index, self.d);
-
-            for child in first_child..std::cmp::min(first_child + self.d, self.heap.len()) {
-                if (self.compare)(&self.heap[child], &self.heap[extreme]) == Ordering::Less {
-                    extreme = child;
-                }
-            }
-
-            if extreme != index {
-                self.heap.swap(index, extreme);
-                index = extreme;
-            } else {
-                break;
-            }
-        }
-    }
-
-    pub fn drain(&mut self) -> impl Iterator<Item = T> + '_ {
-        std::iter::from_fn(move || self.pop())
-    }
-
-    pub fn retain<P>(&mut self, mut predicate: P)
+    fn retain<P>(&mut self, mut predicate: P)
     where
         P: FnMut(&T) -> bool,
     {
@@ -124,58 +154,21 @@ where
             self.heapify_down(i);
         }
     }
-}
 
-impl<T, F, H> From<Heap<T, F, H>> for Vec<T>
-where
-    T: Ord + fmt::Debug,
-    F: Fn(&T, &T) -> Ordering,
-    H: HeapType,
-{
-    fn from(mut heap: Heap<T, F, H>) -> Self {
-        let mut vec = Vec::with_capacity(heap.len());
-        while let Some(item) = heap.pop() {
-            vec.push(item);
-        }
-        vec
+    fn clear(&mut self) {
+        self.heap.clear();
     }
 }
 
-impl<T, H> FromIterator<T> for Heap<T, fn(&T, &T) -> Ordering, H>
-where
-    T: Ord + fmt::Debug,
-    H: HeapCreate<T>,
-{
-    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
-        let mut heap = Self::with_capacity(2, H::comparison_fn(), 0);
-        for item in iter {
-            heap.push(item);
-        }
-        heap
-    }
-}
 
-impl<T, F, H> Extend<T> for Heap<T, F, H>
+// Implement Display for GenericHeap
+impl<T, H> fmt::Display for GenericHeap<T, H>
 where
     T: Ord + fmt::Debug,
-    F: Fn(&T, &T) -> Ordering,
-    H: HeapType,
-{
-    fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
-        for item in iter {
-            self.push(item);
-        }
-    }
-}
-
-impl<T, F, H> fmt::Display for Heap<T, F, H>
-where
-    T: Ord + fmt::Debug,
-    F: Fn(&T, &T) -> Ordering,
     H: HeapType,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}(d={}) [", H::type_name(), self.d)?;
+        write!(f, "{}[", H::type_name())?;
         for (i, item) in self.heap.iter().enumerate() {
             if i > 0 {
                 write!(f, ", ")?;
@@ -186,7 +179,55 @@ where
     }
 }
 
-pub trait HeapCreate<T: Ord + fmt::Debug>: HeapType {
-    fn create_heap() -> Heap<T, fn(&T, &T) -> Ordering, Self>;
-    fn comparison_fn() -> fn(&T, &T) -> Ordering;
+// Implement From<GenericHeap> for Vec
+impl<T, H> From<GenericHeap<T, H>> for Vec<T>
+where
+    T: Ord + fmt::Debug,
+    H: HeapType,
+{
+    fn from(mut heap: GenericHeap<T, H>) -> Self {
+        let mut vec = Vec::with_capacity(heap.len());
+        while let Some(item) = heap.pop() {
+            vec.push(item);
+        }
+        vec
+    }
+}
+
+// Implement FromIterator for GenericHeap
+impl<T, H> FromIterator<T> for GenericHeap<T, H>
+where
+    T: Ord + fmt::Debug,
+    H: HeapType,
+{
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        let mut heap = Self::new();
+        for item in iter {
+            heap.push(item);
+        }
+        heap
+    }
+}
+
+// Implement Extend for GenericHeap
+impl<T, H> Extend<T> for GenericHeap<T, H>
+where
+    T: Ord + fmt::Debug,
+    H: HeapType,
+{
+    fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
+        for item in iter {
+            self.push(item);
+        }
+    }
+}
+
+impl<T, H> GenericHeap<T, H>
+where
+    T: Ord + fmt::Debug,
+    H: HeapType,
+{
+    pub fn into_vec(self) -> Vec<T> {
+        self.heap
+    }
 }

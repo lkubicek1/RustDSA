@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod max_heap_tests {
+    use crate::trees::heaps::heap::Heap;
     use crate::trees::heaps::max_heap::MaxHeap;
 
     #[test]
