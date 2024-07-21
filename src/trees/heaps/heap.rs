@@ -2,34 +2,61 @@ use std::cmp::Ordering;
 use std::fmt;
 use std::marker::PhantomData;
 
+/// A trait defining the basic operations of a heap.
 pub trait Heap<T>
 where
     T: Ord + fmt::Debug,
 {
+    /// Creates a new empty heap.
     fn new() -> Self
     where
         Self: Sized;
+
+    /// Creates a new empty heap with a specified capacity.
     fn with_capacity(capacity: usize) -> Self
     where
         Self: Sized;
+
+    /// Pushes an item onto the heap.
     fn push(&mut self, item: T);
+
+    /// Removes and returns the top item from the heap, if any.
     fn pop(&mut self) -> Option<T>;
+
+    /// Returns a reference to the top item of the heap, if any.
     fn peek(&self) -> Option<&T>;
+
+    /// Returns the number of items in the heap.
     fn len(&self) -> usize;
+
+    /// Returns `true` if the heap contains no items.
     fn is_empty(&self) -> bool;
+
+    /// Drains the heap, returning an iterator over the removed items.
     fn drain(&mut self) -> Box<dyn Iterator<Item = T> + '_>;
+
+    /// Retains only the items specified by the predicate.
     fn retain<P>(&mut self, predicate: P)
     where
         P: FnMut(&T) -> bool;
+
+    /// Clears the heap, removing all items.
     fn clear(&mut self);
 }
 
+/// A trait defining the type of heap (e.g., min-heap, max-heap).
 pub trait HeapType: Sized + fmt::Debug {
+    /// Returns the name of the heap type.
     fn type_name() -> &'static str;
+
+    /// Returns the comparison function for the heap type.
     fn comparison_fn<T: Ord>() -> fn(&T, &T) -> Ordering;
+
+    /// Returns the arity of the heap (e.g., binary heap has arity 2).
     fn arity() -> usize;
 }
 
+/// A generic heap structure that can represent different heap types.
 pub struct GenericHeap<T, H>
 where
     T: Ord + fmt::Debug,
@@ -44,6 +71,7 @@ where
     T: Ord + fmt::Debug,
     H: HeapType,
 {
+    /// Restores the heap property by sifting up the element at `index`.
     fn heapify_up(&mut self, mut index: usize) {
         let compare = H::comparison_fn();
         let d = H::arity();
@@ -58,6 +86,7 @@ where
         }
     }
 
+    /// Restores the heap property by sifting down the element at `index`.
     fn heapify_down(&mut self, mut index: usize) {
         let compare = H::comparison_fn();
         let d = H::arity();
@@ -139,14 +168,18 @@ where
     where
         P: FnMut(&T) -> bool,
     {
-        let mut new_heap = Vec::new();
-        while let Some(item) = self.pop() {
-            if predicate(&item) {
-                new_heap.push(item);
+        let mut i = 0;
+        while i < self.heap.len() {
+            if !predicate(&self.heap[i]) {
+                self.heap.swap_remove(i);
+                if i < self.heap.len() {
+                    self.heapify_down(i);
+                }
+            } else {
+                i += 1;
             }
         }
-        self.heap = new_heap;
-        for i in (0..self.heap.len()).rev() {
+        for i in (0..self.heap.len() / H::arity()).rev() {
             self.heapify_down(i);
         }
     }
@@ -218,6 +251,7 @@ where
     T: Ord + fmt::Debug,
     H: HeapType,
 {
+    /// Consumes the heap and returns a vector of the elements.
     pub fn into_vec(self) -> Vec<T> {
         self.heap
     }

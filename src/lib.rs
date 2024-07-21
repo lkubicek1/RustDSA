@@ -31,12 +31,14 @@ pub mod trees {
         pub mod max_heap;
         pub mod min_heap;
         pub mod priority_queue;
+        pub mod indexed_heap;
 
         #[cfg(test)]
         mod tests {
             mod max_heap_tests;
             mod min_heap_tests;
             mod priority_queue_tests;
+            mod indexed_heap_tests;
         }
     }
 }
