@@ -2,7 +2,6 @@ use std::cmp::Ordering;
 use std::fmt;
 use std::marker::PhantomData;
 
-// Heap trait
 pub trait Heap<T>
 where
     T: Ord + fmt::Debug,
@@ -25,13 +24,12 @@ where
     fn clear(&mut self);
 }
 
-// HeapType trait
 pub trait HeapType: Sized + fmt::Debug {
     fn type_name() -> &'static str;
     fn comparison_fn<T: Ord>() -> fn(&T, &T) -> Ordering;
+    fn arity() -> usize;
 }
 
-// Generic Heap implementation
 pub struct GenericHeap<T, H>
 where
     T: Ord + fmt::Debug,
@@ -48,8 +46,9 @@ where
 {
     fn heapify_up(&mut self, mut index: usize) {
         let compare = H::comparison_fn();
+        let d = H::arity();
         while index > 0 {
-            let parent = (index - 1) / 2;
+            let parent = (index - 1) / d;
             if compare(&self.heap[index], &self.heap[parent]) == Ordering::Less {
                 self.heap.swap(index, parent);
                 index = parent;
@@ -61,19 +60,16 @@ where
 
     fn heapify_down(&mut self, mut index: usize) {
         let compare = H::comparison_fn();
+        let d = H::arity();
         let len = self.heap.len();
         loop {
             let mut extreme = index;
-            let left_child = 2 * index + 1;
-            let right_child = 2 * index + 2;
-
-            if left_child < len && compare(&self.heap[left_child], &self.heap[extreme]) == Ordering::Less {
-                extreme = left_child;
+            for i in 1..=d {
+                let child = d * index + i;
+                if child < len && compare(&self.heap[child], &self.heap[extreme]) == Ordering::Less {
+                    extreme = child;
+                }
             }
-            if right_child < len && compare(&self.heap[right_child], &self.heap[extreme]) == Ordering::Less {
-                extreme = right_child;
-            }
-
             if extreme != index {
                 self.heap.swap(index, extreme);
                 index = extreme;
@@ -150,7 +146,7 @@ where
             }
         }
         self.heap = new_heap;
-        for i in (0..self.heap.len() / 2).rev() {
+        for i in (0..self.heap.len()).rev() {
             self.heapify_down(i);
         }
     }
@@ -160,8 +156,6 @@ where
     }
 }
 
-
-// Implement Display for GenericHeap
 impl<T, H> fmt::Display for GenericHeap<T, H>
 where
     T: Ord + fmt::Debug,
@@ -179,7 +173,6 @@ where
     }
 }
 
-// Implement From<GenericHeap> for Vec
 impl<T, H> From<GenericHeap<T, H>> for Vec<T>
 where
     T: Ord + fmt::Debug,
@@ -194,7 +187,6 @@ where
     }
 }
 
-// Implement FromIterator for GenericHeap
 impl<T, H> FromIterator<T> for GenericHeap<T, H>
 where
     T: Ord + fmt::Debug,
@@ -209,7 +201,6 @@ where
     }
 }
 
-// Implement Extend for GenericHeap
 impl<T, H> Extend<T> for GenericHeap<T, H>
 where
     T: Ord + fmt::Debug,

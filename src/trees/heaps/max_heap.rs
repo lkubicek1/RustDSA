@@ -12,6 +12,10 @@ impl HeapType for MaxHeapType {
     fn comparison_fn<T: Ord>() -> fn(&T, &T) -> Ordering {
         |a, b| b.cmp(a)
     }
+
+    fn arity() -> usize {
+       2
+    }
 }
 
 pub type MaxHeap<T> = GenericHeap<T, MaxHeapType>;

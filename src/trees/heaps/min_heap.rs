@@ -12,6 +12,10 @@ impl HeapType for MinHeapType {
     fn comparison_fn<T: Ord>() -> fn(&T, &T) -> Ordering {
         |a, b| a.cmp(b)
     }
+
+    fn arity() -> usize {
+       2
+    }
 }
 
 pub type MinHeap<T> = GenericHeap<T, MinHeapType>;
