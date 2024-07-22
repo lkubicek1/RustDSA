@@ -72,7 +72,7 @@ where
     H: HeapType,
 {
     /// Restores the heap property by sifting up the element at `index`.
-    fn heapify_up(&mut self, mut index: usize) {
+    pub(crate) fn heapify_up(&mut self, mut index: usize) {
         let compare = H::comparison_fn();
         let d = H::arity();
         while index > 0 {
@@ -87,7 +87,7 @@ where
     }
 
     /// Restores the heap property by sifting down the element at `index`.
-    fn heapify_down(&mut self, mut index: usize) {
+    pub(crate) fn heapify_down(&mut self, mut index: usize) {
         let compare = H::comparison_fn();
         let d = H::arity();
         let len = self.heap.len();
